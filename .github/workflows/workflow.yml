@@ -44,23 +44,7 @@ jobs:
       #      EMAIL_FROM          — sender address (same as SMTP_USERNAME usually)
       #      EMAIL_TO            — recipient address(es), comma-separated
       #
-      - name: Write .env from secrets
-        run: |
-          cat > .env << 'ENVEOF'
-          SMTP_HOST=${{ secrets.SMTP_HOST }}
-          SMTP_PORT=${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          EMAIL_FROM=${{ secrets.EMAIL_FROM }}
-          EMAIL_TO=${{ secrets.EMAIL_TO }}
-          LUNA_CITY=Paris
-          LUNA_COUNTRY=France
-          LUNA_TIMEZONE=Europe/Paris
-          LUNA_SEND_TIME=08:00
-          LUNA_LATITUDE=48.8566
-          LUNA_LONGITUDE=2.3522
-          ENVEOF
-
+      
       # ── 5. Run LUNA ───────────────────────────────────────────────────────
       #
       #    --run-now  fetches live Paris weather, generates the weather report,
