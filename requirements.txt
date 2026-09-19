@@ -1,0 +1,4 @@
+requests>=2.31,<3
+python-dotenv>=1.0,<2
+# Windows has no built-in timezone database; Python's zoneinfo needs this package there.
+tzdata>=2024.1; sys_platform == "win32"
