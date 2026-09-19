@@ -30,35 +30,40 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # ── 4. Write the .env file from GitHub Secrets ────────────────────────
-      #
-      #    luna.py reads credentials through python-dotenv from a .env file.
-      #    We recreate that file here from repository secrets so that NO
-      #    secret value is ever visible in logs or workflow output.
-      #
-      #    Required GitHub Secrets (Settings → Secrets → Actions):
-      #      SMTP_HOST           — e.g. smtp.gmail.com
-      #      SMTP_PORT           — e.g. 587
-      #      SMTP_USERNAME       — your Gmail address
-      #      SMTP_PASSWORD       — your Gmail App Password
-      #      EMAIL_FROM          — sender address (same as SMTP_USERNAME usually)
-      #      EMAIL_TO            — recipient address(es), comma-separated
-      #
-      
+      # ── 4. Create .env from GitHub Secrets ────────────────────────────────
+      - name: Create .env from secrets
+        run: |
+          echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env
+          echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
+          echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> .env
+          echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+          echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
+          echo "EMAIL_TO=${{ secrets.EMAIL_TO }}" >> .env
+          echo "LUNA_CITY=Paris" >> .env
+          echo "LUNA_COUNTRY=France" >> .env
+          echo "LUNA_TIMEZONE=Europe/Paris" >> .env
+          echo "LUNA_SEND_TIME=08:00" >> .env
+          echo "LUNA_LATITUDE=48.8566" >> .env
+          echo "LUNA_LONGITUDE=2.3522" >> .env
+
       # ── 5. Run LUNA ───────────────────────────────────────────────────────
-      #
-      #    --run-now  fetches live Paris weather, generates the weather report,
-      #    builds the HTML email and sends it via Gmail SMTP.
-      #    Exit code 0 = success, 1 = run failed, 2 = configuration error.
-      #
       - name: Run LUNA — send today's weather email
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          LUNA_CITY: Paris
+          LUNA_COUNTRY: France
+          LUNA_TIMEZONE: Europe/Paris
+          LUNA_SEND_TIME: "08:00"
+          LUNA_LATITUDE: "48.8566"
+          LUNA_LONGITUDE: "2.3522"
         run: python luna.py --run-now
 
       # ── 6. Clean up the .env file ─────────────────────────────────────────
-      #
-      #    Remove the .env file immediately after the run so that no secret
-      #    value persists in the runner's workspace or job artifacts.
-      #
       - name: Remove .env file
         if: always()
         run: rm -f .env
